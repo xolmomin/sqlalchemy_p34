@@ -230,3 +230,22 @@ aiogram
 #     conn.execute(query)
 #     conn.commit()
 #
+
+
+"""
+
+#Homework
+User(first_name, last_name, username, password)
+
+
+1. register
+2. login (username, password)
+    1. add product
+    2. delete product
+    3. update product
+    4. show products
+    5. show one product
+    5. logout
+3. exit
+
+"""
