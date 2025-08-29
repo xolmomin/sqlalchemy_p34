@@ -8,6 +8,7 @@
 pyvenv.cfg
 .venv
 .idea
+media
 pip-selfcheck.json
 .idea/**/workspace.xml
 .idea/**/tasks.xml

@@ -1,17 +1,19 @@
+from datetime import datetime
+
 import bcrypt
-from sqlalchemy import Integer, String, select as sqlalchemy_select
+from sqlalchemy import String, select as sqlalchemy_select, BigInteger, func, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base import Model, db
 
 
 class User(Model):
-    id: Mapped[int] = mapped_column(Integer, autoincrement=True, primary_key=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     first_name: Mapped[str] = mapped_column(String(255))
     last_name: Mapped[str] = mapped_column(String(255), nullable=True)
-    username: Mapped[str] = mapped_column(String(255), unique=True)
-    password: Mapped[str] = mapped_column(String(255))
+    username: Mapped[str] = mapped_column(String(255), nullable=True, unique=True)
     products: Mapped[list['Product']] = relationship('Product', back_populates='created_by')
+    registered_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     def __str__(self):
         return f"{self.id} - {self.username}"
