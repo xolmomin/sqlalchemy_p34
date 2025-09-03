@@ -12,7 +12,6 @@ class User(Model):
     first_name: Mapped[str] = mapped_column(String(255))
     last_name: Mapped[str] = mapped_column(String(255), nullable=True)
     username: Mapped[str] = mapped_column(String(255), nullable=True, unique=True)
-    products: Mapped[list['Product']] = relationship('Product', back_populates='created_by')
     registered_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     def __str__(self):

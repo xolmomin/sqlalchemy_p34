@@ -61,10 +61,17 @@ class AbstractClass:
 
     @classmethod
     def get_all(cls):
-        query = sqlalchemy_select(cls)
+        query = sqlalchemy_select(cls).order_by(cls.id.desc())
         db.expire_all()
         results = db.execute(query)
         return results.scalars()
+
+    @classmethod
+    def first(cls):
+        query = sqlalchemy_select(cls).order_by(cls.id.desc())
+        db.expire_all()
+        results = db.execute(query)
+        return results.scalar()
 
     @classmethod
     def get(cls, _id):
