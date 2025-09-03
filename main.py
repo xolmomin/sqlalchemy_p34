@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os.path
 import sys
+from typing import Any, Union, Dict
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
@@ -9,38 +10,88 @@ from aiogram.enums import ParseMode, ContentType
 from aiogram.filters import CommandStart, Command, Filter
 from aiogram.types import Message, BotCommand, BotCommandScopeChat, BotCommandScopeAllPrivateChats, FSInputFile, \
     BotCommandScopeChatAdministrators, BotCommandScopeChatMember, ReplyKeyboardMarkup, KeyboardButton, \
-    ReplyKeyboardRemove, InlineKeyboardButton
+    ReplyKeyboardRemove, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 from models import User, Product
 from models.base import db
+from models.products import Category
 
 dp = Dispatcher()
 
 ADMIN_ID = 514411336
 
 
+class IsAdminFilter(Filter):
+
+    def __init__(self):
+        super().__init__()
+
+    async def __call__(self, message: Message):
+        return message.from_user.id == ADMIN_ID
+
+
 @dp.message(CommandStart())
 async def start(message: Message):
+    categories = Category.get_all()
     rkm = ReplyKeyboardBuilder()
-    rkm.add(KeyboardButton(text='Products'))
+    for category in categories:
+        rkm.add(KeyboardButton(text=category.name))
+
     await message.answer("Menyuni tanlang!", reply_markup=rkm.as_markup())
 
 
-@dp.message(F.text == 'Products')
+def make_category_buttons():
+    ikm = InlineKeyboardBuilder()
+    categories = Category.get_all()
+    for category in categories:
+        ikm.row(
+            InlineKeyboardButton(text=category.name, callback_data='123'),
+            InlineKeyboardButton(text='✏️', callback_data=f'change_{category.id}'),
+            InlineKeyboardButton(text='❌', callback_data=f'delete_{category.id}'),
+        )
+    return ikm
+
+
+@dp.message(IsAdminFilter(), Command('category'))
+async def category_handler(message: Message):
+    ikm = make_category_buttons()
+    await message.answer('Category list', reply_markup=ikm.as_markup())
+
+
+@dp.callback_query(F.data.startswith('change_'))
+async def category_change_handler(callback_query: CallbackQuery):
+    category_id = callback_query.data.removeprefix('change_')
+
+
+@dp.callback_query(F.data.startswith('delete_'))
+async def category_change_handler(callback_query: CallbackQuery):
+    category_id = callback_query.data.removeprefix('delete_')
+    Category.delete(category_id)
+    ikm = make_category_buttons()
+
+    await callback_query.message.edit_text('Category list', callback_query.inline_message_id,
+                                           reply_markup=ikm.as_markup())
+    await callback_query.answer(f'{category_id} deleted', show_alert=True)
+
+
+@dp.message()
 async def product_list(message: Message):
     rkm = ReplyKeyboardRemove()
-
-    product = Product.first()
     await message.answer('Productlar royhati', reply_markup=rkm)
-    text = f"{product.name} | {product.price}"
-    ikm = InlineKeyboardBuilder()
-    ikm.row(
-        InlineKeyboardButton(text='⬅️', callback_data='1234'),
-        InlineKeyboardButton(text='Add Cart 🛒', callback_data='1234'),
-        InlineKeyboardButton(text='➡️', callback_data='1234'),
-    )
-    await message.answer(text, reply_markup=ikm.as_markup())
+
+    category = Category.get_by_name(message.text)
+    products = Product.get_by_category(category.id)
+    for product in products:
+        text = f"{product.name} | {product.price}"
+        ikm = InlineKeyboardBuilder()
+        ikm.row(
+            InlineKeyboardButton(text='⬅️', callback_data='1234'),
+            InlineKeyboardButton(text='Add Cart 🛒', callback_data='1234'),
+            InlineKeyboardButton(text='➡️', callback_data='1234'),
+        )
+        await message.answer(text, reply_markup=ikm.as_markup())
+
 
 # MEDIA_FOLDER = 'media'
 #
@@ -117,6 +168,7 @@ async def startup(bot: Bot) -> None:
         [
             BotCommand(command='start', description='Botni ishga tushirish'),
             BotCommand(command='users_count', description='users count'),
+            BotCommand(command='category', description='category larni korish'),
         ],
         scope=BotCommandScopeChat(chat_id=ADMIN_ID)
     )
@@ -148,8 +200,8 @@ if __name__ == "__main__":
 
 
 admin
-/users
-/products
+/users - userlar soni
+/category - category larni chiqarish (inline da)
 
 users
 
@@ -161,6 +213,10 @@ users
 users,admin
 
 products
+
+pydanticsettings
+structure
+state
 
 
 

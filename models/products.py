@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import Integer, String, DateTime, func, ForeignKey
+from sqlalchemy import Integer, String, DateTime, func, ForeignKey, select as sqlalchemy_select
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.base import Model
+from models.base import Model, db
 
 
 class Category(Model):
@@ -13,6 +13,12 @@ class Category(Model):
 
     def __str__(self):
         return f"{self.id} - {self.name}"
+
+    @classmethod
+    def get_by_name(cls, _name: str):
+        query = sqlalchemy_select(cls).where(cls.name == _name)
+        results = db.execute(query)
+        return results.scalar()
 
 
 class Product(Model):
@@ -25,3 +31,9 @@ class Product(Model):
 
     def __str__(self):
         return f"{self.id} - {self.name}"
+
+    @classmethod
+    def get_by_category(cls, _category_id: int):
+        query = sqlalchemy_select(cls).where(cls.category_id == _category_id)
+        results = db.execute(query)
+        return results.scalars()
