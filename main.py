@@ -223,6 +223,14 @@ structure
 
 
 
+forma
+
+fio
+telefon nomer
+dasturlash tili
+qaysi vaqt
+
+
 
 
 """
