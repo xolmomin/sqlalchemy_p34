@@ -145,3 +145,17 @@ if __name__ == "__main__":
     asyncio.run(main())
 
 # @pdp_p34_bot
+
+"""
+
+ism (fui32hi2u3h)
+familya
+tugilgan yili (1900 - 2025)
+
+
+pydanticsettings
+state
+structure
+
+
+"""
