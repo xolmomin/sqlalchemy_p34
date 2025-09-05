@@ -2,6 +2,8 @@ from sqlalchemy import create_engine, select as sqlalchemy_select, \
     update as sqlalchemy_update, delete as sqlalchemy_delete
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, declared_attr
 
+from config import settings
+
 
 class Base(DeclarativeBase):
     @declared_attr
@@ -27,7 +29,7 @@ class Database:
         self._session = None
 
     def init(self):
-        self._engine = create_engine('postgresql://postgres:1@localhost:5432/p34_db')
+        self._engine = create_engine(settings.postgresql_url)
         self._session = sessionmaker(self._engine, expire_on_commit=False)()
 
     def __getattr__(self, item):

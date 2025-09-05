@@ -13,6 +13,7 @@ from aiogram.types import Message, BotCommand, BotCommandScopeChat, BotCommandSc
     ReplyKeyboardRemove, InlineKeyboardButton, CallbackQuery
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
+from config import settings
 from models import User, Product
 from models.base import db
 from models.products import Category
@@ -183,7 +184,7 @@ async def shutdown(bot: Bot) -> None:
 
 
 async def main() -> None:
-    bot = Bot("8329233522:AAGJWMJuYZPe2z1Qj-siN5glrk9bYu60r4U", default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(settings.TELEGRAM_API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp.shutdown.register(shutdown)
     dp.startup.register(startup)
     await dp.start_polling(bot)
@@ -214,9 +215,12 @@ users,admin
 
 products
 
-pydanticsettings
-structure
+
 state
+
+
+structure
+
 
 
 

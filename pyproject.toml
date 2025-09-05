@@ -7,5 +7,6 @@ dependencies = [
     "aiogram>=3.22.0",
     "bcrypt>=4.3.0",
     "psycopg2-binary>=2.9.10",
+    "pydantic-settings>=2.10.1",
     "sqlalchemy>=2.0.43",
 ]
