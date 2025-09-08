@@ -4,7 +4,7 @@ import bcrypt
 from sqlalchemy import String, select as sqlalchemy_select, BigInteger, func, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.base import Model, db
+from database.base import Model, db
 
 
 class User(Model):

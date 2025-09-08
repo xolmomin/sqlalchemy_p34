@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, select as sqlalchemy_select, \
     update as sqlalchemy_update, delete as sqlalchemy_delete
 from sqlalchemy.orm import DeclarativeBase, sessionmaker, declared_attr
 
-from config import settings
+from core import settings
 
 
 class Base(DeclarativeBase):

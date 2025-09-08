@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Integer, String, DateTime, func, ForeignKey, select as sqlalchemy_select
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from models.base import Model, db
+from database.base import Model, db
 
 
 class Category(Model):
