@@ -105,6 +105,38 @@ class AbstractClass:
         cls.commit()
         return new_obj.scalars()
 
+    @classmethod
+    def filter(cls, *conditions, **kwargs):
+        """
+        Filter records by conditions or keyword arguments.
+        Example:
+            User.filter(User.age > 21, is_active=True)
+
+            # Get all active users
+            users = User.filter(is_active=True)
+
+            # Get users older than 30
+            users = User.filter(User.age > 30)
+
+            # Combine both
+            users = User.filter(User.age > 30, is_active=True)
+        """
+        query = sqlalchemy_select(cls)
+
+        # Handle explicit conditions (like User.age > 21)
+        if conditions:
+            for cond in conditions:
+                query = query.where(cond)
+
+        # Handle keyword filters (like is_active=True)
+        for key, value in kwargs.items():
+            if hasattr(cls, key):
+                query = query.where(getattr(cls, key) == value)
+
+        db.expire_all()
+        results = db.execute(query)
+        return results.scalars()
+
 
 class Model(AbstractClass, Base):
     __abstract__ = True

@@ -9,7 +9,8 @@ from aiogram.types import BotCommand, BotCommandScopeChat, BotCommandScopeAllPri
 
 from bot.handlers import admin_router, user_router
 from core.config import settings
-from database.base import db
+from models import User
+from models.base import db
 
 dp = Dispatcher()
 
@@ -18,16 +19,19 @@ async def startup(bot: Bot) -> None:
     db.create_all()
     # await bot.send_message(ADMIN_ID, "Bot ishga tushdi")
 
+    admin_list: list[User] = User.filter(type=User.Type.ADMIN.name)
     # admin commands
-    await bot.set_my_commands(
-        [
-            BotCommand(command='start', description='Botni ishga tushirish'),
-            BotCommand(command='users_count', description='users count'),
-            BotCommand(command='category', description='category larni korish'),
-            BotCommand(command='drop_all', description='drop all tables'),
-        ],
-        scope=BotCommandScopeChat(chat_id=settings.ADMIN_LIST),
-    )
+    for admin in admin_list:
+        await bot.set_my_commands(
+            [
+                BotCommand(command='start', description='Botni ishga tushirish'),
+                BotCommand(command='channel', description='Kanal edit qilish'),
+                # BotCommand(command='users_count', description='users count'),
+                # BotCommand(command='category', description='category larni korish'),
+                BotCommand(command='drop_all', description='drop all tables'),
+            ],
+            scope=BotCommandScopeChat(chat_id=admin.id),
+        )
 
     await bot.set_my_commands(
         [
